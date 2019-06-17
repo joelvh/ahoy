@@ -265,7 +265,7 @@ Ahoy::BaseController.include Knock::Authenticable
 And use:
 
 ```ruby
-Ahoy.user_method = ->(controller) { controller.send(:authenticate_entity, "user") }
+Ahoy.user_method = ->(controller) { controller.__send__(:authenticate_entity, "user") }
 ```
 
 ### Exclusions

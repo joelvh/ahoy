@@ -1,7 +1,7 @@
 require_relative "../test_helper"
 
 class MysqlJsonEvent < MysqlBase
-  serialize :properties, JSON if connection.send(:mariadb?)
+  serialize :properties, JSON if connection.__send__(:mariadb?)
 end
 
 class MysqlJsonTest < Minitest::Test
