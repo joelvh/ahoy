@@ -46,24 +46,21 @@ module Ahoy
     protected
 
     def bot?
-      unless defined?(@bot)
-        @bot = begin
-          if request
-            if Ahoy.user_agent_parser == :device_detector
-              detector = DeviceDetector.new(request.user_agent)
-              if Ahoy.bot_detection_version == 2
-                detector.bot? || (detector.device_type.nil? && detector.os_name.nil?)
-              else
-                detector.bot?
-              end
-            else
-              # no need to throw friendly error if browser isn't defined
-              # since will error in visit_properties
-              Browser.new(request.user_agent).bot?
-            end
+      return @bot if defined?(@bot)
+      return false unless request
+
+      @bot = begin
+        if Ahoy.user_agent_parser == :device_detector
+          detector = DeviceDetector.new(request.user_agent)
+          if Ahoy.bot_detection_version == 2
+            detector.bot? || (detector.device_type.nil? && detector.os_name.nil?)
           else
-            false
+            detector.bot?
           end
+        else
+          # no need to throw friendly error if browser isn't defined
+          # since will error in visit_properties
+          Browser.new(request.user_agent).bot?
         end
       end
 
@@ -71,14 +68,12 @@ module Ahoy
     end
 
     def exclude_by_method?
-      if Ahoy.exclude_method
-        if Ahoy.exclude_method.arity == 1
-          Ahoy.exclude_method.call(controller)
-        else
-          Ahoy.exclude_method.call(controller, request)
-        end
+      return false unless Ahoy.exclude_method
+    
+      if Ahoy.exclude_method.arity == 1
+        Ahoy.exclude_method.call(controller)
       else
-        false
+        Ahoy.exclude_method.call(controller, request)
       end
     end
 
