@@ -25,8 +25,8 @@ module Ahoy
       @user ||= begin
         if Ahoy.user_method.respond_to?(:call)
           Ahoy.user_method.call(controller)
-        else
-          controller.send(Ahoy.user_method)
+        elsif controller.respond_to?(Ahoy.user_method)
+          controller.__send__(Ahoy.user_method)
         end
       end
     end
